@@ -83,8 +83,18 @@ extension ApplePay: PKPaymentAuthorizationViewControllerDelegate {
         }
     }
 
-    func paymentAuthorizationViewController(_ controller: PKPaymentAuthorizationViewController, didAuthorizePayment payment: PKPayment, completion: @escaping (PKPaymentAuthorizationStatus) -> Void) {
-        let token = String(decoding: payment.token.paymentData, as: UTF8.self)
+        func paymentAuthorizationViewController(_ controller: PKPaymentAuthorizationViewController, didAuthorizePayment payment: PKPayment, completion: @escaping (PKPaymentAuthorizationStatus) -> Void) {
+        let paymentMethod = payment.token.paymentMethod
+        let token: [String: Any] = [
+            "data": String(decoding: payment.token.paymentData, as: UTF8.self), // Encode payment data as base64
+            "paymentMethod": [
+                "type": paymentMethod.type.rawValue,
+                "network": paymentMethod.network?.rawValue ?? "",
+                "displayName": paymentMethod.displayName ?? ""
+            ],
+            "transactionIdentifier": payment.token.transactionIdentifier
+        ]
+
         if token != nil {
             self.resolve!(token)
             completion(.success)
