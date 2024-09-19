@@ -46,7 +46,9 @@ class ApplePay: UIViewController {
             if let methods = shippingDetails["methods"] as? [PKShippingMethod] {
                 request.shippingMethods = methods
             }
-            request.requiredShippingContactFields = [.emailAddress, .name, .phoneNumber, .postalAddress]
+            if #available(iOS 11.0, *) {
+                request.requiredShippingContactFields = [.postalAddress, .emailAddress, .phoneNumber]
+            }
         }
     }
 
